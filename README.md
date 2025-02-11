@@ -1,8 +1,13 @@
+repeat task.wait() until game:IsLoaded() 
+
+repeat task.wait() until game:GetService('Players') and game:GetService('Players').LocalPlayer and game:GetService('Players').LocalPlayer.Character
+
 local Players = game:GetService('Players')
 local Client = Players.LocalPlayer
 
 _G.EnableFriendRequest = true
 _G.EnableAutoAcceptFriendRequest = true
+
 local interval = 60
 
 local function SendFriendRequests()
@@ -19,6 +24,7 @@ local function AutoAcceptFriendRequests()
 
     Client.FriendRequestEvent:Connect(function(requestingPlayer)
         if _G.EnableAutoAcceptFriendRequest then
+            print(requestingPlayer)
             Client:RequestFriendship(requestingPlayer) 
             warn("Đã chấp nhận yêu cầu kết bạn từ:", requestingPlayer.Name)
         end
@@ -34,12 +40,34 @@ local function MainLoop()
     end
 end
 
+
+local messages = {
+    'add me ill give u fruit',
+    'can u help me farming some boss',
+    'give me fruit pls, ty',
+    'who want team with me and farming together',
+}
+local interval = 3600
+
+function sendMessage()
+    local msg = messages[math.random(#messages)] 
+    game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All") 
+    wait(interval)
+    sendMessage()
+end
+
+
 task.spawn(function()
     AutoAcceptFriendRequests()
 end)
 
 task.spawn(function()
     MainLoop()
+end)
+
+task.spawn(function()
+    wait(5) 
+    sendMessage()
 end)
 
 Client.Idled:connect(function()
